@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<!-- 
+            ◢＼　 ☆　　 ／◣
+    　  　∕　　﹨　╰╮∕　　﹨
+    　  　▏　　～～′′～～ 　｜
+    　　  ﹨／　　　　　　 　＼∕
+    　 　 ∕ 　　●　　　 ●　＼
+      ＝＝　○　∴·╰╯　∴　○　＝＝
+    　    ╭──╮　　　　　╭──╮
+  ╔═ ∪∪∪═Mashiro&Hitomi═∪∪∪═╗
+--><html lang="zh-Hans">
+
+<head>
+	<meta name="theme-color">
+	<meta charset="UTF-8">
+	<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <link rel="stylesheet" href="https://s.nmxc.ltd/sakurairo_vision/@2.6/fontawesome/css/all.min.css" type="text/css" media="all">
+		<link rel="shortcut icon" href="https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/favicon.ico">
+	<meta http-equiv="x-dns-prefetch-control" content="on">
+		<title>Microsoft SEAL同态加密库代码详读 &#8211; 匿名制冲浪AnonymouslyNetting</title>
+<meta name="robots" content="noindex, nofollow">
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	<link rel="dns-prefetch" href="//s.nmxc.ltd">
+<link rel="stylesheet" id="wp-quicklatex-format-css" href="anonynetting.github.io/wp-content/plugins/wp-quicklatex/css/quicklatex-format.css?ver=6.8.2" type="text/css" media="all">
+<link rel="stylesheet" id="wp-block-library-css" href="anonynetting.github.io/wp-includes/css/dist/block-library/style.min.css?ver=6.8.2" type="text/css" media="all">
+<style id="classic-theme-styles-inline-css" type="text/css">/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}</style>
+<style id="global-styles-inline-css" type="text/css">:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}</style>
+<link rel="stylesheet" id="saukra-css-css" href="anonynetting.github.io/wp-content/themes/Sakurairo/style.css?ver=2.6.3.1" type="text/css" media="all">
+<link rel="stylesheet" id="entry-content-css" href="anonynetting.github.io/wp-content/themes/Sakurairo/css/theme/sakura.css?ver=2.6.3.1" type="text/css" media="all">
+<script type="text/javascript" src="anonynetting.github.io/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script type="text/javascript" src="anonynetting.github.io/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<script type="text/javascript" src="anonynetting.github.io/wp-content/plugins/wp-quicklatex/js/wp-quicklatex-frontend.js?ver=1.0" id="wp-quicklatex-frontend-js"></script>
+<link rel="https://api.w.org/" href="anonynetting.github.io/wp-json/">
+<link rel="alternate" title="JSON" type="application/json" href="anonynetting.github.io/wp-json/wp/v2/posts/478">
+<link rel="canonical" href="anonynetting.github.io/microsoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du/">
+<link rel="shortlink" href="anonynetting.github.io/?p=478">
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="anonynetting.github.io/wp-json/oembed/1.0/embed?url=anonynetting.github.io%2Fmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du%2F">
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="anonynetting.github.io/wp-json/oembed/1.0/embed?url=anonynetting.github.io%2Fmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du%2F#038;format=xml">
+ <style>.ppw-ppf-input-container { background-color: !important; padding: px!important; border-radius: px!important; } .ppw-ppf-input-container div.ppw-ppf-headline { font-size: px!important; font-weight: !important; color: !important; } .ppw-ppf-input-container div.ppw-ppf-desc { font-size: px!important; font-weight: !important; color: !important; } .ppw-ppf-input-container label.ppw-pwd-label { font-size: px!important; font-weight: !important; color: !important; } div.ppwp-wrong-pw-error { font-size: px!important; font-weight: !important; color: #dc3232!important; background: !important; } .ppw-ppf-input-container input[type='submit'] { color: !important; background: !important; } .ppw-ppf-input-container input[type='submit']:hover { color: !important; background: !important; } .ppw-ppf-desc-below { font-size: px!important; font-weight: !important; color: !important; }</style>  <style>.ppw-form { background-color: !important; padding: px!important; border-radius: px!important; } .ppw-headline.ppw-pcp-pf-headline { font-size: px!important; font-weight: !important; color: !important; } .ppw-description.ppw-pcp-pf-desc { font-size: px!important; font-weight: !important; color: !important; } .ppw-pcp-pf-desc-above-btn { display: block; } .ppw-pcp-pf-desc-below-form { font-size: px!important; font-weight: !important; color: !important; } .ppw-input label.ppw-pcp-password-label { font-size: px!important; font-weight: !important; color: !important; } .ppw-form input[type='submit'] { color: !important; background: !important; } .ppw-form input[type='submit']:hover { color: !important; background: !important; } div.ppw-error.ppw-pcp-pf-error-msg { font-size: px!important; font-weight: !important; color: #dc3232!important; background: !important; }</style> <style>.site-top .lower nav {display: block !important;}
+:root{
+    --theme-skin: #0a0a0a;
+    --theme-skin-matching:#141e72;
+    --infor_bar_bgcolor:rgba(255,255,255,0.6);
+    --style_menu_selection_radius:10px;
+    --post_list_matching_color:#FCCD00;
+    --load_nextpage_svg:url("https://s.nmxc.ltd/sakurairo_vision/@2.6/load_svg/ball.svg");
+    --style_menu_radius:10px;
+    --post-list-thumb: #e8e8e8;
+    --friend-link-shadow: #e8e8e8;
+    --friend-link-title: #ac354b;
+    --comment_area_matching: #6667ab;
+    --comment_area_shadow: #e8e8e8;
+    --shuoshuo_background_color1:rgba(255,224,102,0.2);
+    --shuoshuo_background_color2:rgba(255,204,0,0.2);
+    --inline_code_background_color:#F2F1F1;
+        --theme-skin-dark:  #0a0000;
+    --global-font-weight:300;
+    --theme-dm-background_transparency:0.8;
+    --exhibition_area_matching_color:#a0daa9;
+    --inline_code_background_color_in_dark_mode:#505050;
+}
+.the-feature.from_left_and_right .info,.the-feature.from_left_and_right .info h3{background: rgba(255,255,255,0.4) ;}
+
+/*白猫样式Logo*/
+
+
+/*非全局色彩管理*/
+.post-date {
+    background-color: #FCCD0026;
+}
+
+.center-text{
+color: #FFF ;
+font-size: 80px;
+}
+.Ubuntu-font,.center-text{
+font-family:  ;
+}
+
+.notice i ,
+.notice {
+    color: #999;
+}
+
+.notice {
+    border: 1px solid #E6E6E6;
+}
+
+.entry-content th {
+    background-color: #0a0a0a}
+
+
+#centerbg{}
+
+/*预加载部分*/
+
+#preload {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+    z-index: 99999;
+}
+
+#preload li.active {
+    position: absolute;
+    top: 49%;
+    left: 49%;
+    list-style: none;
+}
+
+html {
+    overflow-y: hidden;
+}
+
+#preloader_3 {
+    position:relative;
+}
+#preloader_3:before {
+    background:#FCCD00;
+    -webkit-animation: preloader_3_before 1.5s infinite ease-in-out;
+    -moz-animation: preloader_3_before 1.5s infinite ease-in-out;
+    -ms-animation: preloader_3_before 1.5s infinite ease-in-out;
+    animation: preloader_3_before 1.5s infinite ease-in-out;
+}
+#preloader_3:after {
+    background:#ffea99;
+    left:22px;
+    -webkit-animation: preloader_3_after 1.5s infinite ease-in-out;
+    -moz-animation: preloader_3_after 1.5s infinite ease-in-out;
+    -ms-animation: preloader_3_after 1.5s infinite ease-in-out;
+    animation: preloader_3_after 1.5s infinite ease-in-out;
+}
+#preloader_3:before,#preloader_3:after {
+    width:20px;
+    height:20px;
+    border-radius:20px;
+    background:#ffea99;
+    position:absolute;
+    content:'';
+}
+@-webkit-keyframes preloader_3_before {
+    0% {
+        -webkit-transform: translateX(0px) rotate(0deg)
+    }
+    50% {
+        -webkit-transform: translateX(50px) scale(1.2) rotate(260deg);
+        background:#ffea99;
+        border-radius:0px;
+    }
+    100% {
+        -webkit-transform: translateX(0px) rotate(0deg)
+    }
+}
+@-webkit-keyframes preloader_3_after {
+    0% {
+        -webkit-transform: translateX(0px)
+    }
+    50% {
+        -webkit-transform: translateX(-50px) scale(1.2) rotate(-260deg);
+        background:#FCCD00;
+        border-radius:0px;
+    }
+    100% {
+        -webkit-transform: translateX(0px)
+    }
+}
+@-moz-keyframes preloader_3_before {
+    0% {
+        -moz-transform: translateX(0px) rotate(0deg)
+    }
+    50% {
+        -moz-transform: translateX(50px) scale(1.2) rotate(260deg);
+        background:#ffea99;
+        border-radius:0px;
+    }
+    100% {
+        -moz-transform: translateX(0px) rotate(0deg)
+    }
+}
+@-moz-keyframes preloader_3_after {
+    0% {
+        -moz-transform: translateX(0px)
+    }
+    50% {
+        -moz-transform: translateX(-50px) scale(1.2) rotate(-260deg);
+        background:#FCCD00;
+        border-radius:0px;
+    }
+    100% {
+        -moz-transform: translateX(0px)
+    }
+}
+@-ms-keyframes preloader_3_before {
+    0% {
+        -ms-transform: translateX(0px) rotate(0deg)
+    }
+    50% {
+        -ms-transform: translateX(50px) scale(1.2) rotate(260deg);
+        background:#ffea99;
+        border-radius:0px;
+    }
+    100% {
+        -ms-transform: translateX(0px) rotate(0deg)
+    }
+}
+@-ms-keyframes preloader_3_after {
+    0% {
+        -ms-transform: translateX(0px)
+    }
+    50% {
+        -ms-transform: translateX(-50px) scale(1.2) rotate(-260deg);
+        background:#FCCD00;
+        border-radius:0px;
+    }
+    100% {
+        -ms-transform: translateX(0px)
+    }
+}
+@keyframes preloader_3_before {
+    0% {
+        transform: translateX(0px) rotate(0deg)
+    }
+    50% {
+        transform: translateX(50px) scale(1.2) rotate(260deg);
+        background:#ffea99;
+        border-radius:0px;
+    }
+    100% {
+        transform: translateX(0px) rotate(0deg)
+    }
+}
+@keyframes preloader_3_after {
+    0% {
+        transform: translateX(0px)
+    }
+    50% {
+        transform: translateX(-50px) scale(1.2) rotate(-260deg);
+        background:#FCCD00;
+        border-radius:0px;
+    }
+    100% {
+        transform: translateX(0px)
+    }
+}
+
+/*深色模式*/
+/*可变项目*/
+
+/*深色模式控件透明度*/
+body.dark .header-info,
+body.dark .header-shuo,
+body.dark .top-social img
+{color:#fff;background:rgba(51,51,51,0.8);}
+
+body.dark .the-feature.from_left_and_right .info
+{background-color: rgba(51,51,51,0.8);}
+
+body.dark .yya,
+body.dark input[type=submit] 
+{background-color:rgba(38,38,38,0.8) !important;}
+
+/*深色模式自定义颜色*/
+body.dark .headertop-down svg path 
+{fill: rgba(51,51,51,0.8) !important;transition: all 0.8s ease !important;}
+
+/*深色模式图像亮度*/
+body.dark img,
+body.dark .highlight-wrap,
+body.dark iframe,
+body.dark .entry-content .aplayer,
+body.dark .post-thumb video
+{filter:brightness(0.8);}
+@media (max-width: 1200px){
+body.dark .site-top .lower nav.navbar ul 
+{background: rgba(255,255,255,0);}
+}
+
+/*字体*/
+
+
+.serif{
+font-family: !important ;
+font-size: 15px;
+}
+
+body{
+font-family: !important;
+font-size: 15px;
+}
+
+.site-top ul li a,.header-user-name,.header-user-menu a {
+font-family:Noto Serif SC !important;
+}
+
+
+.site-title a{
+font-family: 'Noto Serif SC';
+}
+
+
+.site-info,.site-info a{
+font-family:Noto Serif SC !important;
+}
+
+.skin-menu p{
+font-family:Noto Serif SC !important;
+}
+
+h1.main-title,h1.fes-title{
+font-family:Noto Serif SC;
+}
+
+.header-info p, .header-shuo p{
+font-family:Noto Serif SC !important;
+font-size: 18px;
+}
+
+.cbp_tmtimeline > li .cbp_tmlabel {
+font-family:Noto Serif SC !important;
+}
+
+.post-list-thumb .post-title h3{
+font-size: 18px !important;
+}
+
+.post-meta, .post-meta a{
+font-size: 12px !important;
+}
+
+.pattern-center h1.cat-title,
+.pattern-center h1.entry-title {
+font-size: 40px ;
+}
+.pattern-center-sakura h1.cat-title,
+.pattern-center-sakura h1.entry-title {
+font-size: 40px !important;
+}
+
+.single-center .single-header h1.entry-title {
+font-size: 32px ;
+}
+
+/*鼠标*/
+body{
+cursor: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/cursor/normal.cur), auto;
+}
+
+.headertop-down,
+#waifu #live2d,
+.aplayer svg,
+.aplayer.aplayer-narrow .aplayer-body,
+.aplayer.aplayer-narrow .aplayer-pic,
+#emotion-toggle,
+.emoji-item,
+.emotion-box,
+.emotion-item,
+.on-hover,
+.tieba-container span,
+#moblieGoTop,
+#changskin{
+cursor: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/cursor/No_Disponible.cur), auto;
+}
+
+a,
+.ins-section .ins-section-header,
+.font-family-controls button,
+.menu-list li,.ins-section .ins-search-item,
+.ins-section .ins-search-item .ins-search-preview{
+cursor: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/cursor/ayuda.cur), auto;
+}
+
+p,
+.highlight-wrap code,
+.highlight-wrap,
+.hljs-ln-code .hljs-ln-line{
+cursor: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/cursor/texto.cur), auto;
+}
+
+a:active{
+cursor: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/cursor/work.cur), alias;
+}
+
+/*背景类*/
+.comment-respond textarea {
+background-image: url(); 
+}
+
+.search-form.is-visible{
+background-image: url();
+}
+
+.site-footer {
+background-color: rgba(255, 255, 255,0.8);
+}
+
+.wrapper {
+background-color: rgba(255, 255, 255,0.8);
+}
+
+/*首页圆角设置*/
+.header-info,.header-shuo{
+border-radius: 15px;
+grid-row: 1;
+grid-column: 1;
+}
+
+
+.focusinfo img{
+border-radius: 15px;
+}
+
+.focusinfo .header-tou img{
+border-radius: 100px;
+}
+
+/*标题横线动画*/
+
+/*标题动画*/
+.entry-title,.single-center .entry-census a,.entry-census,.post-list p,.p-time,.feature{
+	-moz-animation: fadeInDown 2s;
+    -webkit-animation:fadeInDown 2s;
+	animation: fadeInDown 2s;
+}
+@-moz-keyframes fadeInUp {
+	0% {
+		-moz-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+ 
+@-webkit-keyframes fadeInUp {
+	0% {
+		-webkit-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	50% {
+		-webkit-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	100% {
+		-webkit-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+ 
+@keyframes fadeInUp {
+	0% {
+		-moz-transform: translateY(200%);
+		-ms-transform: translateY(200%);
+		-webkit-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateY(200%);
+		-ms-transform: translateY(200%);
+		-webkit-transform: translateY(200%);
+		transform: translateY(200%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateY(0%);
+		-ms-transform: translateY(0%);
+		-webkit-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+
+/*首页封面动画*/
+h1.main-title, h1.fes-title,.the-feature.from_left_and_right .info,
+.header-info p,.header-info,.header-shuo,.header-shuo p,
+.focusinfo .header-tou img,.top-social img,.center-text{
+	-moz-animation: fadeInDown  2s;
+    -webkit-animation:fadeInDown  2s;
+	animation: fadeInDown  2s;
+}
+@-moz-keyframes fadeInDown {
+	0% {
+		-moz-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+ 
+@-webkit-keyframes fadeInDown {
+	0% {
+		-webkit-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-webkit-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-webkit-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+ 
+@keyframes fadeInDown {
+	0% {
+		-moz-transform: translateY(-100%);
+		-ms-transform: translateY(-100%);
+		-webkit-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateY(-100%);
+		-ms-transform: translateY(-100%);
+		-webkit-transform: translateY(-100%);
+		transform: translateY(-100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateY(0%);
+		-ms-transform: translateY(0%);
+		-webkit-transform: translateY(0%);
+		transform: translateY(0%);
+		opacity: 1
+	}
+}
+
+/*导航菜单动画*/
+.site-top ul {
+	-moz-animation: fadeInLeft  2s;
+    -webkit-animation:fadeInLeft  2s;
+	animation: fadeInLeft  2s;
+    max-width: 76vw;
+}
+@-moz-keyframes fadeInLeft {
+	0% {
+		-moz-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateX(0%);
+		transform: translateX(0%);
+		opacity: 1
+	}
+}
+ 
+@-webkit-keyframes fadeInLeft {
+	0% {
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-webkit-transform: translateX(0%);
+		transform: translateX(0%);
+		opacity: 1
+	}
+}
+ 
+@keyframes fadeInLeft {
+	0% {
+		-moz-transform: translateX(100%);
+		-ms-transform: translateX(100%);
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	50% {
+		-moz-transform: translateX(100%);
+		-ms-transform: translateX(100%);
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+		opacity: 0
+	}
+ 
+	100% {
+		-moz-transform: translateX(0%);
+		-ms-transform: translateX(0%);
+		-webkit-transform: translateX(0%);
+		transform: translateX(0%);
+		opacity: 1
+	}
+}
+
+/*其他*/
+
+.headertop{
+    border-radius: 0 0 15px 15px;
+}
+
+
+
+
+.author-profile .meta {
+display:none;
+}
+
+
+.post-modified-time {
+display:none;
+}
+
+.header-user-avatar{
+display:none;
+}
+
+
+@media (max-width: 860px) {
+.headertop-down {
+        display: none
+    }
+}
+
+.ai-excerpt,
+.ai-excerpt-tip {
+    display: none;
+}
+
+
+
+
+.post-list-thumb:nth-child(2n) .post-content-wrap {
+    float: left;
+    padding-left: 30px;
+    padding-right: 0;
+    text-align: right;
+    margin: 20px 10px 10px 0
+}
+.post-list-thumb:nth-child(2n) .post-thumb {
+    float: left
+}
+
+.post-list-thumb:nth-child(2n) .post-thumb a {
+    border-radius: 10px 0 0 10px
+}
+
+.pattern-center::after {
+    display:none;
+}
+.pattern-center-blank {
+    display:none;
+}
+
+.yya {
+    position: fixed;
+    -webkit-transition: all 1s ease !important;
+    transition: all 1s ease !important;
+    border-radius: 15px !important;
+}
+.site-title img {
+    margin-left: 10px;
+}
+.site-header {
+    border-radius: 15px !important;
+}
+.header-user-menu {
+    border-radius: 15px !important;
+}
+.lower li ul {
+    border-radius: 15px !important;
+}
+@media (max-width:860px) {
+.openNav .icon {
+        left: 5vw;
+    }
+.site-header {
+    width: 100%;
+    height: 60px;
+    top: 0;
+    left: 0;
+    background: 0 0;
+    position: fixed;
+    border-radius: 0 !important;
+}
+.yya {
+    border-radius: 0 !important;
+}
+}
+
+
+.header-user-menu::before {
+    display: none;
+}
+.lower li ul::before {
+    display: none;
+}
+
+.cbp_tmtimeline > li:nth-child(odd) .cbp_tmlabel:after {
+    display: none;
+}
+.cbp_tmtimeline > li .cbp_tmlabel:after {
+    display: none;
+}
+
+.the-feature.from_left_and_right {
+    position: relative;
+    border-radius: 15px;
+    height: 160px;
+    width: 258px;
+    margin: 6px 6px 0 6px;
+}
+
+.the-feature img {
+    height: 160px;
+    width: 258px;
+}
+
+
+
+.notice {
+    background-image:url(https://s.nmxc.ltd/sakurairo_vision/@2.6/series/announcement_bg.webp);
+    background-repeat: round;
+    border: none;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+}
+
+
+body{
+    background-size:auto;
+}
+#video-add{
+    background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/add.png);
+}
+@media (max-width:860px) {
+  .headertop.filter-dot::before {
+    background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/grid.png);
+  }
+}
+.headertop.filter-grid::before {
+  background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/grid.png);
+}
+
+.headertop.filter-dot::before {
+  background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/dot.gif);
+}
+.loadvideo,.video-play {
+  background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/play.png);
+}
+
+.video-pause {
+  background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/stop.png);
+}
+#loading-comments {
+background-image: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/load_svg/ball.svg);
+}
+
+#banner_wave_1 {
+    background: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/wave1.png) repeat-x;
+}
+#banner_wave_2 {
+    background: url(https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/wave2.png) repeat-x;
+}</style>
+<style type="text/css" id="custom-background-css">body.custom-background { background-color: #0a0a0a; }</style>
+		<link rel="stylesheet" href="https://cdn2.tianli0.top/fonts/css?family=Noto+Serif|Noto+Serif+SC|Noto+Sans+SC|Dela+Gothic+One|Fira+Code&display=swap" media="all">
+	<script type="text/javascript">if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+			alert('朋友，IE浏览器未适配哦~\n如果是 360、QQ 等双核浏览器，请关闭 IE 模式！');
+		}</script>
+		</head>
+
+<body class="wp-singular post-template-default single single-post postid-478 single-format-standard custom-background wp-theme-Sakurairo chinese-font  ">
+			<div id="preload">
+			<li data-id="3" class="active">
+				<div id="preloader_3"></div>
+			</li>
+		</div>
+		<div class="scrollbar" id="bar"></div>
+	<header class="site-header no-select" role="banner">
+		<div class="site-top">
+			<div class="site-branding">
+									<div class="site-title">
+						<a href="anonynetting.github.io"><img src="anonynetting.github.io/wp-content/uploads/2024/07/1720539908-image_processing20210616-28548-1xkfyct.png"></a>
+					</div>
+								<!-- logo end -->
+			</div>
+<!-- .site-branding -->
+			    <div class="header-user-avatar">
+      <a href="anonynetting.github.io/wp-login.php?redirect_to=anonynetting.github.io%2Fmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du%3Fpage%26name%3Dmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du">
+        <img alt="header_user_avatar" src="anonynetting.github.io/wp-content/uploads/2024/07/1720526197-420px-Transparent_Akkarin.jpg" width="30" height="30">
+      </a>
+      <div class="header-user-menu">
+        <div class="header-user-name no-logged">
+          <a id="login-link" href="anonynetting.github.io/wp-login.php?redirect_to=anonynetting.github.io%2Fmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du%3Fpage%26name%3Dmicrosoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du" data-no-pjax style="font-weight:bold;text-decoration:none">登录</a>
+        </div>
+      </div>
+    </div>
+  				<div class="searchbox js-toggle-search"><i class="fa-solid fa-magnifying-glass"></i></div>
+						<div class="lower">				<nav><ul id="menu-menu-1" class="menu">
+<li><a href="anonynetting.github.io/">首页</a></li>
+<li><a href="anonynetting.github.io/guan-yu-ben-zhan/">关于本站</a></li>
+<li><a href="anonynetting.github.io/xue-xi/">学习</a></li>
+<li class="current-post-ancestor current-menu-parent"><a href="anonynetting.github.io/survey/">Survey</a></li>
+<li><a href="anonynetting.github.io/labinstruction/">LabInstruction</a></li>
+<li><a href="anonynetting.github.io/za-xiang/">杂项</a></li>
+</ul></nav><!-- #site-navigation -->
+			</div>
+		</div>
+	</header><!-- #masthead -->
+	<div class="openNav no-select">
+		<div class="iconflat no-select" style="padding: 30px;">
+			<div class="icon"></div>
+		</div>
+	</div>
+<!-- m-nav-bar -->
+	<section id="main-container">
+					<div class="headertop filter-nothing">
+				<div id="banner_wave_1"></div>
+<div id="banner_wave_2"></div>
+<figure id="centerbg" class="centerbg">
+            <div class="focusinfo">
+                            <div class="header-tou">
+<a href="anonynetting.github.io"><img alt="avatar" loading="lazy" src="anonynetting.github.io/wp-content/uploads/2024/07/1720522969-xia-zai.png"></a>
+                </div>
+                        <div class="header-container">
+                <div class="header-info">
+                    <!-- 首页一言打字效果 -->
+                                        <p>长风破浪会有时，直挂云帆济沧海</p>
+                                    </div>               
+            </div>
+
+                            <div class="top-social">
+                            <li id="bg-pre"><img src="https://s.nmxc.ltd/sakurairo_vision/@2.6/display_icon/flat_colorful/pre.png" loading="lazy" alt="上一篇"></li>
+                <li><a href="https://b23.tv/3ab0pTa" target="_blank" class="social-bili" title="bilibili"><img alt="bilibili" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/display_icon/flat_colorful/bilibili.png"></a></li>
+                    <li><a href="https://github.com/AnonyNetting" target="_blank" class="social-github" title="github"><img alt="github" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/display_icon/flat_colorful/github.png"></a></li>
+                    <li><a href="https://steamcommunity.com/id/AnonymouslyNetting/" target="_blank" class="social-wangyiyun" title="steam"><img alt="steam" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/display_icon/flat_colorful/st.png"></a></li>
+                <li id="bg-next"><img loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/display_icon/flat_colorful/next.png" alt="下一篇"></li>
+                    </div>
+                    </div>
+    </figure>
+<!-- 首页下拉箭头 -->
+<div class="headertop-down" onclick="headertop_down()"><span><svg t="1682342753354" class="homepage-downicon" viewbox="0 0 1843 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="21355" width="80px" height="80px"><path d="M1221.06136021 284.43250057a100.69380037 100.69380037 0 0 1 130.90169466 153.0543795l-352.4275638 302.08090944a100.69380037 100.69380037 0 0 1-130.90169467 0L516.20574044 437.48688007A100.69380037 100.69380037 0 0 1 647.10792676 284.43250057L934.08439763 530.52766665l286.97696258-246.09516608z" fill="rgba(255,255,255,0.8)" p-id="21356"></path></svg></span></div>
+			</div>
+				<div id="page" class="site wrapper">
+			<div class="blank"></div>			<div id="content" class="site-content">
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+		
+<div class="has-toc have-toc"></div>
+
+<article id="post-478" class="post-478 post type-post status-publish format-standard hentry category-survey">
+		<header class="entry-header">
+		<h1 class="entry-title">Microsoft SEAL同态加密库代码详读</h1>
+		<p class="entry-census">发布于 2025-04-30&nbsp;&nbsp;53 次阅读 </p>
+		<hr>
+	</header><!-- .entry-header -->
+		<!--<div class="toc-entry-content">--><!-- 套嵌目录使用（主要为了支援评论）-->
+		<div class="entry-content">
+		
+<p>Microsoft SEAL是由微软开发的开源同态加密算法库，目前支持BGV, BFV, CKKS以及其RNS下的同态操作，提供8个examples支持使用者直观学习使用方法，全部examples不使用RNS，但是库中包含RNS相关函数。这里预计先写2, 5, 6的代码理解，搭配<a href="https://anonynetting.github.io/quan-tong-tai-jia-mi-fully-homomorphic-encryption-fhe-diao/" data-type="link" data-id="https://anonynetting.github.io/quan-tong-tai-jia-mi-fully-homomorphic-encryption-fhe-diao/" target="_blank" rel="nofollow">同态加密(Homomorphic Encryption, HE)调查兼CKKS数篇文章带读</a>可能方便理解。另外给SEAL evaluator.cpp中提供的没有出现在以上examples的算子写一份测试用例，因为发现SEAL存在少量参数选择很不主流，调试时可能出坑，例如编码时选取的基与HEAAN和后来的论文都不同，SEAL选择3而一般文献都选择5，这影响了替换操作和旋转操作的galois key在何值处生成能取得等价性。<s>后续应该还会写一份自己的RNS-CKKS example。</s>(使用matlab编写了一份RNS-CKKS，仓库在<a href="https://github.com/AnonyNetting/CKKS_matlab.git" target="_blank" rel="nofollow">https://github.com/AnonyNetting/CKKS_matlab.git</a>）</p>
+
+
+
+<figure class="wp-block-image size-large is-resized"><img fetchpriority="high" decoding="async" width="1024" height="508" src="anonynetting.github.io/wp-content/uploads/2025/04/1745997037-image-1024x508.png" alt="" class="wp-image-479" style="width:546px;height:auto" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1745997037-image-1024x508.png 1024w, anonynetting.github.io/wp-content/uploads/2025/04/1745997037-image-300x149.png 300w, anonynetting.github.io/wp-content/uploads/2025/04/1745997037-image-768x381.png 768w, anonynetting.github.io/wp-content/uploads/2025/04/1745997037-image.png 1081w" sizes="(max-width: 1024px) 100vw, 1024px"></figure>
+
+
+
+<h2 class="wp-block-heading">2. encoders</h2>
+
+
+
+<p>2_encoders.cpp其实包含面向BFV, BGV的batch_encoder和CKKS的ckks_encoder。这里只谈ckks_encoder。</p>
+
+
+
+<h3 class="wp-block-heading">目标问题：</h3>
+
+
+
+<p># of slot: 4096，未编码明文x = [0.0, 1.1, 2.2, 3.3]，同态下求解x^2.</p>
+
+
+
+<h3 class="wp-block-heading">代码</h3>
+
+
+
+<pre class="wp-block-code"><code>void example_ckks_encoder()
+{
+    print_example_banner("Example: Encoders / CKKS Encoder");
+
+    EncryptionParameters parms(scheme_type::ckks);//声明面向ckks的参数结构parms
+
+    size_t poly_modulus_degree = 8192;//多项式order = 8192
+    parms.set_poly_modulus_degree(poly_modulus_degree);
+    parms.set_coeff_modulus(CoeffModulus::Create(poly_modulus_degree, { 40, 40, 40, 40, 40 }));//数字表示bit宽度，在这个宽度的附近用CoeffModulus::Create函数找到可使用的素数;从左到右依次对应于q, p0, p1, p2, P;如同开头所引链接文章内容，这里的位宽设置的合理逻辑是q=P&gt;pi，但是这里没有设置q, P &gt; pi的原因是任务x^2只会降低一次层级，而不会使密文模降低到仅剩下q导致模的数量级靠近缩放因子，所以不需要像通用做法一样安排模数
+
+    //以上设置parms被进一步调整结构用于生成公私钥和重线性密钥
+    SEALContext context(parms);
+    print_parameters(context);
+    cout &lt;&lt; endl;
+
+    /*
+    Keys are created the same way as for the BFV scheme.
+    */
+    KeyGenerator keygen(context);
+    auto secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    RelinKeys relin_keys;
+    keygen.create_relin_keys(relin_keys);
+
+    //加密器，计算器，解密器
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+
+    //编码器
+    CKKSEncoder encoder(context);
+
+    //# of slots in ckks is N/2，在这里# of slots = 4192
+    size_t slot_count = encoder.slot_count();
+    cout &lt;&lt; "Number of slots: " &lt;&lt; slot_count &lt;&lt; endl;
+
+    //待编码的向量长度&lt;N/2时，会自动为剩余位置补0，比如这里长度仅4，剩余4192-4都会补0
+    vector&lt;double&gt; input{ 0.0, 1.1, 2.2, 3.3 };
+    cout &lt;&lt; "Input vector: " &lt;&lt; endl;
+    print_vector(input);
+
+    //注意到scale = 2^30，与q并不处在同一数量级上，这是因为2_encoder.cpp本身就不严格符合ckks，其实更建议去看5_ckks_basics.cpp
+    Plaintext plain;
+    double scale = pow(2.0, 30);
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode input vector." &lt;&lt; endl;
+    encoder.encode(input, scale, plain);
+
+    //立即执行一次解码，查看编码效果
+    vector&lt;double&gt; output;
+    cout &lt;&lt; "    + Decode input vector ...... Correct." &lt;&lt; endl;
+    encoder.decode(plain, output);
+    print_vector(output);
+
+    //加密
+    Ciphertext encrypted;
+    print_line(__LINE__);
+    cout &lt;&lt; "Encrypt input vector, square, and relinearize." &lt;&lt; endl;
+    encryptor.encrypt(plain, encrypted);
+
+    /*
+    接下来就是在密文上平方，解密，解码；解码结果向量长度N/2，这是因为编码时补0到N/2的长度
+    */
+    evaluator.square_inplace(encrypted);
+    evaluator.relinearize_inplace(encrypted, relin_keys);
+
+    /*
+    平方也就是自乘，这导致缩放因子变为2^60，正常来说需要一次重缩放；但这里不是正常的CKKS算法演示，于是这里的做法是在解密时去掉缩放因子的步骤将缩放因子用2^60而不是最初的2^30来处理
+    */
+    cout &lt;&lt; "    + Scale in squared input: " &lt;&lt; encrypted.scale() &lt;&lt; " (" &lt;&lt; log2(encrypted.scale()) &lt;&lt; " bits)"
+         &lt;&lt; endl;
+
+    print_line(__LINE__);
+    cout &lt;&lt; "Decrypt and decode." &lt;&lt; endl;
+    decryptor.decrypt(encrypted, plain);
+    encoder.decode(plain, output);
+    cout &lt;&lt; "    + Result vector ...... Correct." &lt;&lt; endl;
+    print_vector(output);
+
+    /*
+    正常来说CKKS是允许在同态下降低缩放因子的。这将在3_levels.cpp和5_ckks_basics.cpp中阐述
+    */
+}</code></pre>
+
+
+
+<h2 class="wp-block-heading">5. CKKS Basics</h2>
+
+
+
+<h3 class="wp-block-heading">目标问题：</h3>
+
+
+
+<p># of slot: 4096，在[0, 1]区间上均匀取4096个点，对所有点同态下执行 PI<em>x^3 + 0.4</em>x + 1.</p>
+
+
+
+<h3 class="wp-block-heading">代码</h3>
+
+
+
+<pre class="wp-block-code"><code>void example_ckks_basics()
+{
+    print_example_banner("template: ckks basic function");
+
+    EncryptionParameters parms(scheme_type::ckks);//表示CKKS参数的集合
+
+    size_t poly_modulus_degree = 8192;//指定多项式环order = 8192
+    parms.set_poly_modulus_degree(poly_modulus_degree);
+    parms.set_coeff_modulus(CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 60 }));//数字表示bit宽度，在这个宽度的附近用CoeffModulus::Create函数找到可使用的素数;从左向右依次对应q0, p1, p2, P;如同开头所引链接文章内容，这里的位宽设置逻辑是q=P&gt;pi。
+    double scale = pow(2.0, 40);//缩放因子设置靠近pi，与引文描述相同
+
+//使用这些参数设计开始生成相关密钥，包括加解密钥和其他辅助密钥
+    SEALContext context(parms);
+    print_parameters(context);
+    cout &lt;&lt; endl;
+
+    KeyGenerator keygen(context);
+    auto secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    RelinKeys relin_keys;
+    keygen.create_relin_keys(relin_keys);
+    GaloisKeys gal_keys;
+    keygen.create_galois_keys(gal_keys);
+//定义加密器，计算器，解密器，编码器
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+    CKKSEncoder encoder(context);
+    size_t slot_count = encoder.slot_count();
+    cout &lt;&lt; "Number of slot" &lt;&lt; slot_count &lt;&lt; endl;//这里就是8192/2
+
+    vector&lt;double&gt; input;
+    input.reserve(slot_count);
+    double curr_point = 0;
+    double step_size = 1.0 / (static_cast&lt;double&gt;(slot_count) - 1);
+    for (size_t i = 0; i &lt; slot_count; i++)
+    {
+        input.push_back(curr_point);
+        curr_point += step_size;
+    }
+    cout &lt;&lt; "input vector" &lt;&lt; endl;
+    print_vector(input, 3, 7);
+
+    cout &lt;&lt; "Evaluating polynomial PI*x^3 + 0.4x + 1 ..." &lt;&lt; endl;
+
+    /*
+    PI 0.4 1作为后续要参与乘法的明文也要执行encoder，但不必encrypt；以明文多项式方式参与的话实际上就是将自身重复N/2次填入所有slot；注意这里scale也被传入，即明文数值也应当在编码后被scale放大
+    */
+    Plaintext plain_coeff3, plain_coeff1, plain_coeff0;
+    encoder.encode(3.14159265, scale, plain_coeff3);
+    encoder.encode(0.4, scale, plain_coeff1);
+    encoder.encode(1.0, scale, plain_coeff0);
+
+    Plaintext x_plain;
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode input vectors" &lt;&lt; endl;
+    encoder.encode(input, scale, x_plain);//&#91;0,1]上的N/2个点被编码
+    Ciphertext x1_encrypted;
+    encryptor.encrypt(x_plain, x1_encrypted);//加密器生成对应上面编码的密文
+
+    /*
+    要计算x^3，我们首先计算x^2并重线性化。计算得到的x^2对应的缩放因子已增长到2^80。
+    */
+    Ciphertext x3_encrypted;
+    print_line(__LINE__);
+    cout &lt;&lt; "Compute x^2 and relinearize" &lt;&lt; endl;
+    evaluator.square(x1_encrypted, x3_encrypted);//使用x计算x^2，存进x^3的密文结构里面去
+    evaluator.relinearize_inplace(x3_encrypted, relin_keys);//对x^3这个密文结构原址执行重线性化
+    cout &lt;&lt; "    + Scale of x^2 before rescale: " &lt;&lt; log2(x3_encrypted.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+
+    /*
+    现在进行重缩放；缩放因子会按被移除的素数（40位素数）等比例缩小。
+    因此，新的缩放因子应接近2^40。但要注意，缩放因子从这个步骤后并不等于2^40，
+    这是因为40位素数只是接近2^40。
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Rescale x^2。" &lt;&lt; endl;
+    evaluator.rescale_to_next_inplace(x3_encrypted);//对x^3这个密文结构原址执行重缩放
+    cout &lt;&lt; "    + Scale of x^2 after rescale: " &lt;&lt; log2(x3_encrypted.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+
+    /*
+    现在x3_encrypted和x1_encrypted处于不同层级，这阻碍了我们通过相乘计算x^3。
+    我们可以简单地将x1_encrypted切换到模切换链中的下一个参数。但由于我们仍需要将x^3项与PI（plain_coeff3）相乘，
+    我们改为先计算PI*x，然后与x^2相乘得到PI*x^3。为此，我们计算PI*x并将其缩放因子从2^80重新调整到接近2^40。可见，明文×密文也是要借由重缩放来恢复的，即：明文×密文也会消耗深度
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Compute and rescale PI*x." &lt;&lt; endl;
+    Ciphertext x1_encrypted_coeff3;
+    evaluator.multiply_plain(x1_encrypted, plain_coeff3, x1_encrypted_coeff3);//multiply_plain专用于执行密文×明文
+    cout &lt;&lt; "    + Scale of PI*x before rescale: " &lt;&lt; log2(x1_encrypted_coeff3.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+    evaluator.rescale_to_next_inplace(x1_encrypted_coeff3);
+    cout &lt;&lt; "    + Scale of PI*x after rescale: " &lt;&lt; log2(x1_encrypted_coeff3.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+
+    /*
+    由于x3_encrypted和x1_encrypted_coeff3具有完全相同的缩放因子并使用相同的加密参数，
+    我们可以将它们相乘。我们将结果写入x3_encrypted，重线性化并重缩放。
+    注意实际缩放因子在上次的基础上再次偏移（未必误差变大，只是再次发生变化）。
+    此外，由于我们设计pi仅包含2级，在完成PI·x^3后已经消耗尽了深度
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Compute, relinearize, and rescale (PI*x)*x^2。" &lt;&lt; endl;
+    evaluator.multiply_inplace(x3_encrypted, x1_encrypted_coeff3);
+    evaluator.relinearize_inplace(x3_encrypted, relin_keys);
+    cout &lt;&lt; "    + Scale of PI*x^3 before rescale: " &lt;&lt; log2(x3_encrypted.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+    evaluator.rescale_to_next_inplace(x3_encrypted);
+    cout &lt;&lt; "    + Scale of PI*x^3 after rescale: " &lt;&lt; log2(x3_encrypted.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+
+    /*
+    接下来我们计算一次项。这只需要一次与plain_coeff1的multiply_plain操作。
+    我们用结果覆盖x1_encrypted。
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Compute and rescale 0.4*x。" &lt;&lt; endl;
+    evaluator.multiply_plain_inplace(x1_encrypted, plain_coeff1);
+    cout &lt;&lt; "    + Scale of 0.4*x before rescale: " &lt;&lt; log2(x1_encrypted.scale()) &lt;&lt; "bits" &lt;&lt; endl;
+    evaluator.rescale_to_next_inplace(x1_encrypted);
+    cout &lt;&lt; "    + Scale of 0.4*x after rescale: " &lt;&lt; log2(x1_encrypted.scale()) &lt;&lt; " bits" &lt;&lt; endl;
+
+    /*
+    现在要执行三项的合并。问题在于，现在这三项分别处在不同的深度上，对应了不同的模数。Evaluator会审查参与计算的对象的parms_id，如果不一致就会报错。这里先显示一下待合并的三项的所处在的深度
+    */
+    cout &lt;&lt; endl;
+    print_line(__LINE__);
+    cout &lt;&lt; "Parameters used by all three terms are different." &lt;&lt; endl;
+    cout &lt;&lt; "    + Modulus chain index for x3_encrypted: "
+         &lt;&lt; context.get_context_data(x3_encrypted.parms_id())-&gt;chain_index() &lt;&lt; endl;
+    cout &lt;&lt; "    + Modulus chain index for x1_encrypted: "
+         &lt;&lt; context.get_context_data(x1_encrypted.parms_id())-&gt;chain_index() &lt;&lt; endl;
+    cout &lt;&lt; "    + Modulus chain index for plain_coeff0: "
+         &lt;&lt; context.get_context_data(plain_coeff0.parms_id())-&gt;chain_index() &lt;&lt; endl;
+    cout &lt;&lt; endl;
+
+    /*
+    整理一下目前的深度是怎么来的
+
+        - Product x^2 has scale 2^80 and is at level 2;
+        - Product PI*x has scale 2^80 and is at level 2;
+        - We rescaled both down to scale 2^80/P_2 and level 1;
+        - Product PI*x^3 has scale (2^80/P_2)^2;
+        - We rescaled it down to scale (2^80/P_2)^2/P_1 and level 0;
+        - Product 0.4*x has scale 2^80;
+        - We rescaled it down to scale 2^80/P_2 and level 1;
+        - The contant term 1 has scale 2^40 and is at level 2.
+
+    虽然它们的缩放因子都大约是 2^40, 但精确来说是不同的，因此也不能加在一起。这里显示一下各自实际使用的缩放因子
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "The exact scales of all three terms are different:" &lt;&lt; endl;
+    ios old_fmt(nullptr);
+    old_fmt.copyfmt(cout);
+    cout &lt;&lt; fixed &lt;&lt; setprecision(10);
+    cout &lt;&lt; "    + Exact scale in PI*x^3: " &lt;&lt; x3_encrypted.scale() &lt;&lt; endl;
+    cout &lt;&lt; "    + Exact scale in  0.4*x: " &lt;&lt; x1_encrypted.scale() &lt;&lt; endl;
+    cout &lt;&lt; "    + Exact scale in      1: " &lt;&lt; plain_coeff0.scale() &lt;&lt; endl;
+    cout &lt;&lt; endl;
+    cout.copyfmt(old_fmt);
+
+    /*
+    有不同的方法解决这个问题，例如①直接将PI*x^3和0.4*x的缩放因子标签改为2^40的初始精准值；这不会引起明显的偏差；
+
+    还有方法例如②将1编码时使用2^80/p2，然后在密文下再与0.4*x乘一次，使其也落到深度0。这种方法需要额外的来自于加密方的操作，其实不太有用。
+
+    下面用①来计算
+    修改PI*x^3 and 0.4*x 的缩放因子到 2^40.
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Normalize scales to 2^40." &lt;&lt; endl;
+    x3_encrypted.scale() = pow(2.0, 40);
+    x1_encrypted.scale() = pow(2.0, 40);
+
+    /*
+    Evaluator会审查的parms_id不只是缩放因子，还包括其他参数。考虑到PI*x^3的深度最低，直接通过mod_switch将0.4*x和1的模数降下来是最简单对齐其他参数的方法
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Normalize encryption parameters to the lowest level." &lt;&lt; endl;
+    parms_id_type last_parms_id = x3_encrypted.parms_id();
+    evaluator.mod_switch_to_inplace(x1_encrypted, last_parms_id);
+    evaluator.mod_switch_to_inplace(plain_coeff0, last_parms_id);
+
+    /*
+    所有参数和缩放因子已经对齐
+    */
+    print_line(__LINE__);
+    cout &lt;&lt; "Compute PI*x^3 + 0.4*x + 1." &lt;&lt; endl;
+    Ciphertext encrypted_result;
+    evaluator.add(x3_encrypted, x1_encrypted, encrypted_result);//密文加
+    evaluator.add_plain_inplace(encrypted_result, plain_coeff0);//密文＋明文
+
+    /*
+    首先确认理想输出
+    */
+    Plaintext plain_result;
+    print_line(__LINE__);
+    cout &lt;&lt; "Decrypt and decode PI*x^3 + 0.4x + 1." &lt;&lt; endl;
+    cout &lt;&lt; "    + Expected result:" &lt;&lt; endl;
+    vector&lt;double&gt; true_result;
+    for (size_t i = 0; i &lt; input.size(); i++)
+    {
+        double x = input&#91;i];
+        true_result.push_back((3.14159265 * x * x + 0.4) * x + 1);
+    }
+    print_vector(true_result, 3, 7);
+
+    /*
+    解密，解码，得到同态下的输出
+    */
+    decryptor.decrypt(encrypted_result, plain_result);
+    vector&lt;double&gt; result;
+    encoder.decode(plain_result, result);
+    cout &lt;&lt; "    + Computed result ...... Correct." &lt;&lt; endl;
+    print_vector(result, 3, 7);
+
+    /*
+    这里没有使用复数作为输入用例，但是CKKS支持复数输入
+    */
+}</code></pre>
+
+
+
+<h2 class="wp-block-heading">6. Rotation</h2>
+
+
+
+<h3 class="wp-block-heading">目标问题：</h3>
+
+
+
+<p># of slot: 4096，在[0, 1]区间上均匀取4096个点，对[0 1/4095 ... 4095/4095]同态下执行向左旋转（循环移位）2个slot.</p>
+
+
+
+<h3 class="wp-block-heading">代码</h3>
+
+
+
+<pre class="wp-block-code"><code>void example_rotation_ckks()
+{
+    print_example_banner("Example: Rotation / Rotation in CKKS");
+
+    EncryptionParameters parms(scheme_type::ckks);
+
+    size_t poly_modulus_degree = 8192;
+    parms.set_poly_modulus_degree(poly_modulus_degree);
+    parms.set_coeff_modulus(CoeffModulus::Create(poly_modulus_degree, { 40, 40, 40, 40, 40 }));//这里的模数选取又没有遵守q = P &gt; pi,因为确定不会掉落深度到0层
+
+    SEALContext context(parms);
+    print_parameters(context);
+    cout &lt;&lt; endl;
+
+    KeyGenerator keygen(context);
+    SecretKey secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    RelinKeys relin_keys;
+    keygen.create_relin_keys(relin_keys);
+    GaloisKeys galois_keys;
+    keygen.create_galois_keys(galois_keys);
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+
+    CKKSEncoder ckks_encoder(context);
+
+    size_t slot_count = ckks_encoder.slot_count();
+    cout &lt;&lt; "Number of slots: " &lt;&lt; slot_count &lt;&lt; endl;
+    vector&lt;double&gt; input;
+    input.reserve(slot_count);
+    double curr_point = 0;
+    double step_size = 1.0 / (static_cast&lt;double&gt;(slot_count) - 1);
+    for (size_t i = 0; i &lt; slot_count; i++, curr_point += step_size)
+    {
+        input.push_back(curr_point);
+    }
+    cout &lt;&lt; "Input vector:" &lt;&lt; endl;
+    print_vector(input, 3, 7);
+
+    auto scale = pow(2.0, 50);//缩放因子也没有靠近pi
+
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode and encrypt." &lt;&lt; endl;
+    Plaintext plain;
+    ckks_encoder.encode(input, scale, plain);
+    Ciphertext encrypted;
+    encryptor.encrypt(plain, encrypted);
+
+    Ciphertext rotated;
+    print_line(__LINE__);
+    cout &lt;&lt; "Rotate 2 steps left." &lt;&lt; endl;
+    evaluator.rotate_vector(encrypted, 2, galois_keys, rotated);//使用旋转密钥完成旋转操作
+    cout &lt;&lt; "    + Decrypt and decode ...... Correct." &lt;&lt; endl;
+    decryptor.decrypt(rotated, plain);
+    vector&lt;double&gt; result;
+    ckks_encoder.decode(plain, result);
+    print_vector(result, 3, 7);
+
+    /*
+    CKKS还可以执行同态求槽上共轭的功能，这个在引文链接里也有提到，类似于旋转，操作流程都是：提前KSGen生成旋转/共轭所需的辅助密钥；在密文多项式上执行替换，旋转时将X替换为X<sup><sup><sub>3</sub>r</sup></sup>，共轭时将X替换为X<sup>-1</sup>；替换后使用辅助密钥和KS函数，将密文返回到使用s作为私钥的状态
+    */
+}</code></pre>
+
+
+
+<h2 class="wp-block-heading">剩余算子用例</h2>
+
+
+
+<p>根据evaluator.h，可以看到SEAL支持以下算子：</p>
+
+
+
+<figure class="wp-block-image size-full"><img decoding="async" width="969" height="735" src="anonynetting.github.io/wp-content/uploads/2025/04/1746114566-tu-pian-1.png" alt="" class="wp-image-511" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1746114566-tu-pian-1.png 969w, anonynetting.github.io/wp-content/uploads/2025/04/1746114566-tu-pian-1-300x228.png 300w, anonynetting.github.io/wp-content/uploads/2025/04/1746114566-tu-pian-1-768x583.png 768w" sizes="(max-width: 969px) 100vw, 969px"></figure>
+
+
+
+<p>negate的原理应该算是比较简单，c1 = (-as + m + e, a)，密文直接取反得(as - m - e, -a)，应用密钥得(-m - e)。</p>
+
+
+
+<pre class="wp-block-code"><code>void example_negate_ckks()
+{
+    print_example_banner("Example: Negate in CKKS");
+
+    EncryptionParameters parms(scheme_type::ckks);
+
+    size_t poly_modulus_degree = 8192;
+    parms.set_poly_modulus_degree(poly_modulus_degree);
+    parms.set_coeff_modulus(CoeffModulus::Create(poly_modulus_degree, { 40, 40, 40, 40, 40 }));
+
+    SEALContext context(parms);
+    print_parameters(context);
+    cout &lt;&lt; endl;
+
+    KeyGenerator keygen(context);
+    SecretKey secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+
+    CKKSEncoder ckks_encoder(context);
+
+    size_t slot_count = ckks_encoder.slot_count();
+    cout &lt;&lt; "Number of slots: " &lt;&lt; slot_count &lt;&lt; endl;
+    vector&lt;double&gt; input;
+    input.reserve(slot_count);
+    double curr_point = 0;
+    double step_size = 1.0 / (static_cast&lt;double&gt;(slot_count) - 1);
+    for (size_t i = 0; i &lt; slot_count; i++, curr_point += step_size)
+    {
+        input.push_back(curr_point);
+    }
+    cout &lt;&lt; "Input vector:" &lt;&lt; endl;
+    print_vector(input, 3, 7);
+
+    auto scale = pow(2.0, 50);
+
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode and encrypt." &lt;&lt; endl;
+    Plaintext plain;
+    ckks_encoder.encode(input, scale, plain);
+    Ciphertext encrypted;
+    encryptor.encrypt(plain, encrypted);
+
+    Ciphertext negated;
+    print_line(__LINE__);
+    cout &lt;&lt; "Negate input" &lt;&lt; endl;
+    evaluator.negate(encrypted, negated);
+    cout &lt;&lt; "    + Decrypt and decode ...... Correct." &lt;&lt; endl;
+    decryptor.decrypt(negated, plain);
+    vector&lt;double&gt; result;
+    ckks_encoder.decode(plain, result);
+    print_vector(result, 3, 7);
+}</code></pre>
+
+
+
+<p>mod_switch的功能与rescale类似，但是mod_swicth不调整密文所对应的缩放因子，即.scale()。mod_swicth函数其实对应CKKS原始论文Homomorphic Encryption for Arithmetic of Approximate Numbers中图3的右边，单纯将多项式上所有在原Q上取模的系数重新在层级更低的Q'上取模。对比rescale则需要对所有系数乘以要去掉的那一层所对应剩余模的逆，如下式；mod_switch则仅对应红框标识的部分。</p>
+
+
+
+<figure class="wp-block-image size-full is-resized"><img loading="lazy" decoding="async" width="807" height="313" src="anonynetting.github.io/wp-content/uploads/2025/04/1746167204-image.png" alt="" class="wp-image-516" style="width:482px;height:auto" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1746167204-image.png 807w, anonynetting.github.io/wp-content/uploads/2025/04/1746167204-image-300x116.png 300w, anonynetting.github.io/wp-content/uploads/2025/04/1746167204-image-768x298.png 768w" sizes="auto, (max-width: 807px) 100vw, 807px"></figure>
+
+
+
+<figure class="wp-block-image size-full is-resized"><img loading="lazy" decoding="async" width="700" height="100" src="anonynetting.github.io/wp-content/uploads/2025/04/1746168247-image.png" alt="" class="wp-image-519" style="width:439px;height:auto" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1746168247-image.png 700w, anonynetting.github.io/wp-content/uploads/2025/04/1746168247-image-300x43.png 300w" sizes="auto, (max-width: 700px) 100vw, 700px"></figure>
+
+
+
+<pre class="wp-block-code"><code>void example_mod_switch_ckks()
+{
+    print_example_banner("Example: Negate in CKKS");
+
+    EncryptionParameters parms(scheme_type::ckks);
+    size_t N = 8192;
+    parms.set_poly_modulus_degree(N);
+    parms.set_coeff_modulus(CoeffModulus::Create(N, {40, 40, 40, 40}));
+    SEALContext context(parms);
+
+    KeyGenerator keygen(context);
+    SecretKey secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    RelinKeys relin_keys;
+    keygen.create_relin_keys(relin_keys);
+    GaloisKeys galois_keys;
+    keygen.create_galois_keys(galois_keys);
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+
+    CKKSEncoder ckks_encoder(context);
+
+    size_t slot_count = ckks_encoder.slot_count();
+    cout &lt;&lt; "Number of slots: " &lt;&lt; slot_count &lt;&lt; endl;
+    vector&lt;double&gt; input;
+    input.reserve(slot_count);
+    double curr_point = 0;
+    double step_size = 1.0 / (static_cast&lt;double&gt;(slot_count) - 1);
+    for (size_t i = 0; i &lt; slot_count; i++, curr_point += step_size)
+    {
+        input.push_back(curr_point);
+    }
+    cout &lt;&lt; "Input vector:" &lt;&lt; endl;
+    print_vector(input, 3, 7);
+
+    auto scale = pow(2.0, 50);
+
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode and encrypt." &lt;&lt; endl;
+    Plaintext plain;
+    ckks_encoder.encode(input, scale, plain);
+    Ciphertext encrypted;
+    encryptor.encrypt(plain, encrypted);
+
+    cout &lt;&lt; "Before mod_switch: Level (chain index) = " 
+        &lt;&lt; context.get_context_data(encrypted.parms_id())-&gt;chain_index() &lt;&lt; endl;
+    evaluator.mod_switch_to_next_inplace(encrypted);
+    cout &lt;&lt; "After mod_switch: Level (chain index) = " 
+        &lt;&lt; context.get_context_data(encrypted.parms_id())-&gt;chain_index() &lt;&lt; endl;
+
+    print_line(__LINE__);
+    cout &lt;&lt; "    + Decrypt and decode ...... Correct." &lt;&lt; endl;
+    decryptor.decrypt(encrypted, plain);
+    vector&lt;double&gt; result;
+    ckks_encoder.decode(plain, result);
+    print_vector(result, 3, 7);
+}</code></pre>
+
+
+
+<p>rotate_row和rotate_column仅支持BFV， BGV，因为这两种算法加密对象是矩阵， rotate_column仅支持CKKS因为CKKS加密填充slot的vector。</p>
+
+
+
+<p>exponentiate执行同态求幂，但是SEAL不支持为CKKS执行这个操作，不知道是出于什么考虑。</p>
+
+
+
+<figure class="wp-block-image size-full is-resized"><img loading="lazy" decoding="async" width="1015" height="210" src="anonynetting.github.io/wp-content/uploads/2025/04/1746170446-image.png" alt="" class="wp-image-520" style="width:512px;height:auto" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1746170446-image.png 1015w, anonynetting.github.io/wp-content/uploads/2025/04/1746170446-image-300x62.png 300w, anonynetting.github.io/wp-content/uploads/2025/04/1746170446-image-768x159.png 768w" sizes="auto, (max-width: 1015px) 100vw, 1015px"></figure>
+
+
+
+<p>transform_to_ntt执行plain polynomial从normal到NTT域上的变换，便于multiply_plain。留意multiply_plain其实已经内含了这个功能（下图evaluator.cpp可见已经考虑了multiply_plain时所有可能情况），明文可以直接以normal输入给multiply_plain，这个函数单列出来主要还是提供一个观察的效果。另外，transform_to_ntt是根据RNS分解在每个小因数上的环而进行的。</p>
+
+
+
+<figure class="wp-block-image size-full is-resized"><img loading="lazy" decoding="async" width="765" height="382" src="anonynetting.github.io/wp-content/uploads/2025/04/1746172192-image.png" alt="" class="wp-image-521" style="width:556px;height:auto" srcset="anonynetting.github.io/wp-content/uploads/2025/04/1746172192-image.png 765w, anonynetting.github.io/wp-content/uploads/2025/04/1746172192-image-300x150.png 300w" sizes="auto, (max-width: 765px) 100vw, 765px"></figure>
+
+
+
+<p>apply_galois是非常重要的函数。以apply_galois_inplace(encrypted, i)为例，它将编码后多项式p(X)替换为p(X^i)。如前面分析过的，在SEAL中，rotate(k)等价于apply_galois(3^k mod N)，conjugate等价于apply_galois(2N-1)。注意无论是apply_galois，还是其特殊情况rotate, conjugate都需要galois_key。galois_key需要通过keygen.create_galois_keys(galois_elts, galois_keys)函数生成。在仅使用rotate, conjugate的情况下可以省略galois_elts参数设置，而当我们需要替换X为任意X^i时则需要为其设置参数。以下代码给出用例。</p>
+
+
+
+<pre class="wp-block-code"><code>void example_apply_galois_ckks()
+{
+    print_example_banner("Example: Rotation / Rotation in CKKS");
+
+    EncryptionParameters parms(scheme_type::ckks);
+
+    size_t poly_modulus_degree = 8192;
+    parms.set_poly_modulus_degree(poly_modulus_degree);
+    parms.set_coeff_modulus(CoeffModulus::Create(poly_modulus_degree, { 40, 40, 40, 40, 40 }));
+
+    SEALContext context(parms);
+    print_parameters(context);
+    cout &lt;&lt; endl;
+
+    KeyGenerator keygen(context);
+    SecretKey secret_key = keygen.secret_key();
+    PublicKey public_key;
+    keygen.create_public_key(public_key);
+    RelinKeys relin_keys;
+    keygen.create_relin_keys(relin_keys);
+    GaloisKeys galois_keys;
+    //keygen.create_galois_keys(galois_keys);
+    std::vector&lt;std::uint32_t&gt; galois_elts = {3, 2*8192-1};
+    keygen.create_galois_keys(galois_elts, galois_keys);
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+    Decryptor decryptor(context, secret_key);
+
+    CKKSEncoder ckks_encoder(context);
+
+    size_t slot_count = ckks_encoder.slot_count();
+    cout &lt;&lt; "Number of slots: " &lt;&lt; slot_count &lt;&lt; endl;
+    vector&lt;complex&lt;double&gt;&gt; input(slot_count);
+    double step = 1.0 / (slot_count - 1);  // 1/4095 when slot_count=4096
+
+    for (size_t k = 0; k &lt; slot_count; k++) {
+        input&#91;k] = complex&lt;double&gt;(k * step, k * step);  // 实部和虚部相同
+    }
+    cout &lt;&lt; "Input vector:" &lt;&lt; endl;
+    print_vector(input, 5, 11);
+
+    auto scale = pow(2.0, 50);
+
+    print_line(__LINE__);
+    cout &lt;&lt; "Encode and encrypt." &lt;&lt; endl;
+    Plaintext plain1, plain2, plain3, plain4;
+    /*
+    plain1: apply_galois(encrypted, 3)
+    plain2: rotate_vector(encrypted, 1)
+    plain3: apply_galois(encrypted, 2*N-1)
+    plain4: complex_conjugate(encrypted)
+    
+    we expect plain1 == plain2, plain3 == plain4
+    */
+    ckks_encoder.encode(input, scale, plain1);
+    Ciphertext encrypted;
+    encryptor.encrypt(plain1, encrypted);
+
+    Ciphertext encrypted1, encrypted2, encrypted3, encrypted4;
+    print_line(__LINE__);
+    evaluator.apply_galois(encrypted, 3, galois_keys, encrypted1);
+    evaluator.rotate_vector(encrypted, 1, galois_keys, encrypted2);
+    evaluator.apply_galois(encrypted, 2*8192-1, galois_keys, encrypted3);
+    evaluator.complex_conjugate(encrypted, galois_keys, encrypted4);
+    vector&lt;complex&lt;double&gt;&gt; result1, result2, result3, result4;
+    cout &lt;&lt; "Substitute x -&gt; x^3:" &lt;&lt; endl;
+    decryptor.decrypt(encrypted1, plain1);
+    ckks_encoder.decode(plain1, result1);
+    print_vector(result1, 5, 11);
+    cout &lt;&lt; "Rotate 1:" &lt;&lt; endl;
+    decryptor.decrypt(encrypted2, plain2);
+    ckks_encoder.decode(plain2, result2);
+    print_vector(result2, 5, 11);
+    cout &lt;&lt; "Substitute x -&gt; x^(2*N-1):" &lt;&lt; endl;
+    decryptor.decrypt(encrypted3, plain3);
+    ckks_encoder.decode(plain3, result3);
+    print_vector(result3, 5, 11);
+    cout &lt;&lt; "Complex conjugate:" &lt;&lt; endl;
+    decryptor.decrypt(encrypted4, plain4);
+    ckks_encoder.decode(plain4, result4);
+    print_vector(result4, 5, 11);
+}</code></pre>
+				<!--<div class="oshimai"></div>-->
+		<!--<h2 style="opacity:0;max-height:0;margin:0">Comments</h2>--><!-- 评论跳转标记 -->
+	</div>
+<!-- .entry-content -->
+	<footer class="post-footer">
+    <div class="post-lincenses">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow">
+            <i class="fa-brands fa-creative-commons"></i>
+        </a>
+    </div>
+        <section class="author-profile">
+                <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            <a href="anonynetting.github.io/author/anonymouslynetting/" class="profile gravatar">
+                <img class="fa-spin" style="--fa-animation-duration: 15s;" src="anonynetting.github.io/wp-content/uploads/2024/07/1720522969-xia-zai.png" itemprop="image" alt="AnonymouslyNetting" height="30" width="30">
+            </a>
+        </div>
+        <div class="meta">
+            <a href="anonynetting.github.io/author/anonymouslynetting/" itemprop="url" rel="author">AnonymouslyNetting</a>						
+        </div>
+            </section>
+    <div class="post-modified-time">
+        <i class="fa-solid fa-calendar-day" aria-hidden="true"></i>最后更新于 2025-06-17    </div>
+    <div class="post-tags">
+        <i class="fa-solid fa-tag" aria-hidden="true"></i> 啥也没有呀    </div>
+</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+<div class="toc-container"><div class="toc"></div></div>
+<section class="post-squares nextprev">
+		<div class="post-nepre half previous">
+		<a href="anonynetting.github.io/quan-tong-tai-jia-mi-fully-homomorphic-encryption-fhe-diao/" rel="prev"><div class="background lazyload" style="background-image:url(https://s.nmxc.ltd/sakurairo_vision/@2.6/load_svg/outload.svg);" data-src="anonynetting.github.io/wp-content/uploads/2024/12/1733567272-image-1024x295.png"></div>
+<span class="label">上一篇文章</span><div class="info">
+<h3>同态加密(Homomorphic Encryption, HE)调查兼CKKS数篇文章带读</h3>
+<hr>
+</div></a>	</div>
+	<div class="post-nepre half next">
+		<a href="anonynetting.github.io/zu-li-ri-guang-lu-xian-zong-jie/" rel="next"><div class="background lazyload" style="background-image:url(https://s.nmxc.ltd/sakurairo_vision/@2.6/load_svg/outload.svg);" data-src="anonynetting.github.io/wp-content/uploads/2025/09/1756885754-DSC01649-1024x683.jpg"></div>
+<span class="label">下一篇文章</span><div class="info">
+<h3>25 0830-0831足利日光路线总结</h3>
+<hr>
+</div></a>	</div>
+</section>
+		</main><!-- #main -->
+	</div>
+<!-- #primary -->
+	</div>
+<!-- #content -->
+	
+	
+	<section id="comments" class="comments">
+		<div class="commentwrap comments-hidden">
+			<div class="notification">
+<i class="fa-regular fa-comment"></i>查看评论 -
+			<span class="noticom">NOTHING </span>
+			</div>
+		</div>
+		<div class="comments-main">
+		 <h3 id="comments-list-title">Comments <span class="noticom">NOTHING </span>
+</h3> 
+		<div id="loading-comments"><span></span></div>
+			
+									<div class="commentwrap">
+						<div class="notification-hidden">
+<i class="fa-regular fa-comment"></i> 暂无评论</div>
+					
+					</div>
+				
+			
+				<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title"> <small><a rel="nofollow" id="cancel-comment-reply-link" href="anonynetting.github.io/microsoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du/#respond" style="display:none;">取消回复</a></small>
+</h3>
+<form action="anonynetting.github.io/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+<p style="font-style:italic"><a href="https://segmentfault.com/markdown" target="_blank"><i class="fa-brands fa-markdown" style="color:var(--comment_area_matching);"></i></a> Markdown Supported while <i class="fa-solid fa-code"></i> Forbidden</p>
+<div class="comment-textarea">
+<textarea placeholder="你是我一生只会遇见一次的惊喜 ..." name="comment" class="commentbody" id="comment" rows="5" tabindex="4"></textarea><label class="input-label">你是我一生只会遇见一次的惊喜 ...</label>
+</div>
+                        <div id="upload-img-show"></div>
+                        <!--插入表情面版-->
+                        <p id="emotion-toggle" class="no-select">
+												<span class="emotion-toggle-off">戳我呀 OωO</span>
+												<span class="emotion-toggle-on">嘿嘿嘿 ヾ(≧∇≦*)ゝ</span>
+											</p>
+											<div class="emotion-box no-select">
+												<table class="motion-switcher-table">
+													<tr>
+													<th onclick="motionSwitch('.bili')" class="bili-bar on-hover">bilibili~</th>
+													<th onclick="motionSwitch('.tieba')" class="tieba-bar">Tieba</th>
+													<th onclick="motionSwitch('.menhera')" class="menhera-bar">(=・ω・=)</th>
+													
+													</tr>
+												</table>
+												<div class="bili-container motion-container" style="display:block;">
+<span title="baiyan" onclick="grin('baiyan',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_baiyan.png"></span><span title="bishi" onclick="grin('bishi',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_bishi.png"></span><span title="bizui" onclick="grin('bizui',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_bizui.png"></span><span title="chan" onclick="grin('chan',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_chan.png"></span><span title="dai" onclick="grin('dai',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_dai.png"></span><span title="daku" onclick="grin('daku',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_daku.png"></span><span title="dalao" onclick="grin('dalao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_dalao.png"></span><span title="dalian" onclick="grin('dalian',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_dalian.png"></span><span title="dianzan" onclick="grin('dianzan',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_dianzan.png"></span><span title="doge" onclick="grin('doge',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_doge.png"></span><span title="facai" onclick="grin('facai',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_facai.png"></span><span title="fanu" onclick="grin('fanu',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_fanu.png"></span><span title="ganga" onclick="grin('ganga',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_ganga.png"></span><span title="guilian" onclick="grin('guilian',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_guilian.png"></span><span title="guzhang" onclick="grin('guzhang',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_guzhang.png"></span><span title="haixiu" onclick="grin('haixiu',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_haixiu.png"></span><span title="heirenwenhao" onclick="grin('heirenwenhao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_heirenwenhao.png"></span><span title="huaixiao" onclick="grin('huaixiao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_huaixiao.png"></span><span title="jingxia" onclick="grin('jingxia',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_jingxia.png"></span><span title="keai" onclick="grin('keai',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_keai.png"></span><span title="koubizi" onclick="grin('koubizi',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_koubizi.png"></span><span title="kun" onclick="grin('kun',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_kun.png"></span><span title="lengmo" onclick="grin('lengmo',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_lengmo.png"></span><span title="liubixue" onclick="grin('liubixue',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_liubixue.png"></span><span title="liuhan" onclick="grin('liuhan',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_liuhan.png"></span><span title="liulei" onclick="grin('liulei',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_liulei.png"></span><span title="miantian" onclick="grin('miantian',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_miantian.png"></span><span title="mudengkoudai" onclick="grin('mudengkoudai',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_mudengkoudai.png"></span><span title="nanguo" onclick="grin('nanguo',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_nanguo.png"></span><span title="outu" onclick="grin('outu',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_outu.png"></span><span title="qinqin" onclick="grin('qinqin',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_qinqin.png"></span><span title="se" onclick="grin('se',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_se.png"></span><span title="shengbing" onclick="grin('shengbing',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_shengbing.png"></span><span title="shengqi" onclick="grin('shengqi',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_shengqi.png"></span><span title="shuizhao" onclick="grin('shuizhao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_shuizhao.png"></span><span title="sikao" onclick="grin('sikao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_sikao.png"></span><span title="tiaokan" onclick="grin('tiaokan',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_tiaokan.png"></span><span title="tiaopi" onclick="grin('tiaopi',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_tiaopi.png"></span><span title="touxiao" onclick="grin('touxiao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_touxiao.png"></span><span title="tuxue" onclick="grin('tuxue',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_tuxue.png"></span><span title="weiqu" onclick="grin('weiqu',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_weiqu.png"></span><span title="weixiao" onclick="grin('weixiao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_weixiao.png"></span><span title="wunai" onclick="grin('wunai',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_wunai.png"></span><span title="xiaoku" onclick="grin('xiaoku',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_xiaoku.png"></span><span title="xieyanxiao" onclick="grin('xieyanxiao',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_xieyanxiao.png"></span><span title="yiwen" onclick="grin('yiwen',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_yiwen.png"></span><span title="yun" onclick="grin('yun',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_yun.png"></span><span title="zaijian" onclick="grin('zaijian',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_zaijian.png"></span><span title="zhoumei" onclick="grin('zhoumei',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_zhoumei.png"></span><span title="zhuakuang" onclick="grin('zhuakuang',type = 'Math')"><img alt="bili_smilies" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/bilipng/emoji_zhuakuang.png"></span>
+</div>
+												<div class="tieba-container motion-container" style="display:none;">
+<span title="good" onclick="grin('good',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_good.png"></span><span title="han" onclick="grin('han',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_han.png"></span><span title="spray" onclick="grin('spray',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_spray.png"></span><span title="Grievance" onclick="grin('Grievance',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_Grievance.png"></span><span title="shui" onclick="grin('shui',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_shui.png"></span><span title="reluctantly" onclick="grin('reluctantly',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_reluctantly.png"></span><span title="anger" onclick="grin('anger',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_anger.png"></span><span title="tongue" onclick="grin('tongue',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_tongue.png"></span><span title="se" onclick="grin('se',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_se.png"></span><span title="haha" onclick="grin('haha',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_haha.png"></span><span title="rmb" onclick="grin('rmb',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_rmb.png"></span><span title="doubt" onclick="grin('doubt',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_doubt.png"></span><span title="tear" onclick="grin('tear',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_tear.png"></span><span title="surprised2" onclick="grin('surprised2',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_surprised2.png"></span><span title="Happy" onclick="grin('Happy',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_Happy.png"></span><span title="ku" onclick="grin('ku',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_ku.png"></span><span title="surprised" onclick="grin('surprised',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_surprised.png"></span><span title="theblackline" onclick="grin('theblackline',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_theblackline.png"></span><span title="smilingeyes" onclick="grin('smilingeyes',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_smilingeyes.png"></span><span title="spit" onclick="grin('spit',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_spit.png"></span><span title="huaji" onclick="grin('huaji',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_huaji.png"></span><span title="bbd" onclick="grin('bbd',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_bbd.png"></span><span title="hu" onclick="grin('hu',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_hu.png"></span><span title="shame" onclick="grin('shame',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_shame.png"></span><span title="naive" onclick="grin('naive',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_naive.png"></span><span title="rbq" onclick="grin('rbq',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_rbq.png"></span><span title="britan" onclick="grin('britan',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_britan.png"></span><span title="aa" onclick="grin('aa',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_aa.png"></span><span title="niconiconi" onclick="grin('niconiconi',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_niconiconi.png"></span><span title="niconiconi_t" onclick="grin('niconiconi_t',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_niconiconi_t.png"></span><span title="niconiconit" onclick="grin('niconiconit',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_niconiconit.png"></span><span title="awesome" onclick="grin('awesome',type = 'tieba')"><img alt="tieba_smilie" loading="lazy" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/smilies/tiebapng/icon_awesome.png"></span>
+</div>
+												<div class="menhera-container motion-container" style="display:none;">
+<a class="emoji-item">(⌒▽⌒)</a><a class="emoji-item">（￣▽￣）</a><a class="emoji-item">(=・ω・=)</a><a class="emoji-item">(｀・ω・´)</a><a class="emoji-item">(〜￣△￣)〜</a><a class="emoji-item">(･∀･)</a><a class="emoji-item">(°∀°)ﾉ</a><a class="emoji-item">(￣3￣)</a><a class="emoji-item">╮(￣▽￣)╭</a><a class="emoji-item">(´_ゝ｀)</a><a class="emoji-item">←_←</a><a class="emoji-item">→_→</a><a class="emoji-item">(&lt;_&lt;)</a><a class="emoji-item">(&gt;_&gt;)</a><a class="emoji-item">(;¬_¬)</a><a class="emoji-item">("▔□▔)/</a><a class="emoji-item">(ﾟДﾟ≡ﾟдﾟ)!?</a><a class="emoji-item">Σ(ﾟдﾟ;)</a><a class="emoji-item">Σ(￣□￣||)</a><a class="emoji-item">(’；ω；‘)</a><a class="emoji-item">（/TДT)/</a><a class="emoji-item">(^・ω・^ )</a><a class="emoji-item">(｡･ω･｡)</a><a class="emoji-item">(●￣(ｴ)￣●)</a><a class="emoji-item">ε=ε=(ノ≧∇≦)ノ</a><a class="emoji-item">(’･_･‘)</a><a class="emoji-item">(-_-#)</a><a class="emoji-item">（￣へ￣）</a><a class="emoji-item">(￣ε(#￣)Σ</a><a class="emoji-item">ヽ(‘Д’)ﾉ</a><a class="emoji-item">（#-_-)┯━┯</a><a class="emoji-item">(╯°口°)╯(┴—┴</a><a class="emoji-item">←◡←</a><a class="emoji-item">( ♥д♥)</a><a class="emoji-item">_(:3」∠)_</a><a class="emoji-item">Σ&gt;―(〃°ω°〃)♡→</a><a class="emoji-item">⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</a><a class="emoji-item">(╬ﾟдﾟ)▄︻┻┳═一</a><a class="emoji-item">･*･:≡(　ε:)</a><a class="emoji-item">(笑)</a><a class="emoji-item">(汗)</a><a class="emoji-item">(泣)</a><a class="emoji-item">(苦笑)</a>
+</div>
+															  
+											</div>
+                        <!--表情面版完--><div class="cmt-info-container">
+<div class="comment-user-avatar">
+<img alt="comment_user_avatar" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/basic/avatar.jpeg"><div class="socila-check qq-check"><i class="fa-brands fa-qq"></i></div>
+<div class="socila-check gravatar-check"><i class="fa-solid fa-face-kiss-wink-heart"></i></div>
+</div>
+<div class="popup cmt-popup cmt-author" onclick="cmt_showPopup(this)">
+<span class="popuptext" id="thePopup" style="margin-left: -115px;width: 230px;">输入QQ号将自动拉取昵称和头像</span><input type="text" placeholder="昵称或QQ号 " name="author" id="author" value="" size="22" autocomplete="off" tabindex="1">
+</div>
+<div class="popup cmt-popup" onclick="cmt_showPopup(this)">
+<span class="popuptext" id="thePopup" style="margin-left: -65px;width: 130px;">你将收到回复通知</span><input type="text" placeholder="邮箱 " name="email" id="email" value="" size="22" tabindex="1" autocomplete="off">
+</div>
+<div class="popup cmt-popup" onclick="cmt_showPopup(this)">
+<span class="popuptext" id="thePopup" style="margin-left: -55px;width: 110px;">禁止小广告😀</span><input type="text" placeholder="网站" name="url" id="url" value="" size="22" autocomplete="off" tabindex="1">
+</div>
+</div>
+<input type="text" placeholder="QQ" name="new_field_qq" id="qq" value="" style="display:none" autocomplete="off"><!--此栏不可见-->
+<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes"> <label for="wp-comment-cookies-consent">在此浏览器中保存我的显示名称、邮箱地址和网站地址，以便下次评论时使用。</label></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="BiuBiuBiu~"> <input type="hidden" name="comment_post_ID" value="478" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p>
+</form>	</div>
+<!-- #respond -->
+	
+		</div>
+
+
+	</section>
+</div>
+<!-- #page Pjax container-->
+	<footer id="colophon" class="site-footer" role="contentinfo">
+		<div class="site-info" theme-info="Sakurairo v2.6.3.1">
+			<div class="footertext">
+				<div class="img-preload">
+					<img alt="loading_svg" src="https://s.nmxc.ltd/sakurairo_vision/@2.6/load_svg/ball.svg"><!-- 加载下一部分圈圈 -->
+				</div>
+				<div class="sakura-icon" style="width:max-content;height:max-content;margin: auto;">
+				<svg width="30px" height="30px" t="1682340134496" class="sakura-svg" viewbox="0 0 1049 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5240"><path d="M525.58396628 573.34694353s268.83106938-2.62915481 309.36387092 193.24287089l-76.46458293 21.90962291 12.92667757 84.13295086a214.05701289 214.05701289 0 0 1-96.84053193-4.82011663A224.79272784 224.79272784 0 0 1 525.58396628 578.38615666z" fill="#EE9ca7" p-id="5241"></path><path d="M552.75189802 512.4381922s131.45773592-233.7756732 321.63325979-170.89505575L854.2283053 418.66500728l79.31283344 30.89256828a215.59068679 215.59068679 0 0 1-52.58309388 81.50379604 224.57363215 224.57363215 0 0 1-325.35789552-14.67944718z" fill="#EE9ca7" p-id="5242"></path><path d="M508.49446078 494.0341093S317.00435871 306.48774025 426.77156822 139.31731943l69.4535037 38.78003191L547.4935884 109.30113636a214.05701289 214.05701289 0 0 1 65.72886796 71.86356201 225.01182435 225.01182435 0 0 1-98.37420505 310.67844912z" fill="#EE9ca7" p-id="5243"></path><path d="M473.21996809 525.58396628S242.2925454 661.64272234 109.30113636 512.4381922l55.43134521-57.18411482-53.45947909-65.72886795a213.61882069 213.61882069 0 0 1 86.32391269-43.81924506 224.79272784 224.79272784 0 0 1 274.527572 175.27698099z" fill="#EE9ca7" p-id="5244"></path><path d="M481.76472043 566.55496s72.0826585 258.31445093-106.4807652 348.14390364l-40.31370582-68.13892627-78.21735252 34.17901099a212.30424328 212.30424328 0 0 1-20.15685331-94.64956933 224.57363215 224.57363215 0 0 1 241.00584894-219.09622602z" fill="#EE9ca7" p-id="5245"></path></svg>
+				</div>
+				<p style="color: #666666;">Wish you a lovely day.</p>
+			</div>
+			<div class="footer-device function_area">
+										<span style="color: #b9b9b9;">
+																		                        <br>
+						<a href="https://github.com/mirai-mamori/Sakurairo" rel="noopener" target="_blank" id="site-info">Theme Sakurairo</a><a href="https://docs.fuukei.org/" rel="noopener" target="_blank" id="site-info"> by Fuukei</a> 
+					</span>
+			</div>
+		</div>
+<!-- .site-info -->
+	</footer><!-- #colophon -->
+	</section><!-- #section -->
+	<!-- m-nav-center -->
+	<div id="mo-nav">
+		<div class="m-avatar">
+						<img alt="m-avatar" src="anonynetting.github.io/wp-content/uploads/2024/07/1720522969-xia-zai.png">
+		</div>
+		<div class="m-search">
+			<form class="m-search-form" method="get" action="anonynetting.github.io" role="search">
+				<input class="m-search-input" type="search" name="s" placeholder="搜索..." required>
+			</form>
+		</div>
+		<ul id="menu-menu-2" class="menu">
+<li><a href="anonynetting.github.io/">首页</a></li>
+<li><a href="anonynetting.github.io/guan-yu-ben-zhan/">关于本站</a></li>
+<li><a href="anonynetting.github.io/xue-xi/">学习</a></li>
+<li class="current-post-ancestor current-menu-parent"><a href="anonynetting.github.io/survey/">Survey</a></li>
+<li><a href="anonynetting.github.io/labinstruction/">LabInstruction</a></li>
+<li><a href="anonynetting.github.io/za-xiang/">杂项</a></li>
+</ul>	</div>
+<!-- m-nav-center end -->
+	<button id="moblieGoTop" title="回到顶部"><i class="fa-solid fa-caret-up fa-lg"></i></button>
+  <button id="changskin" title="控制面板"><i class="fa-solid fa-compass-drafting fa-lg fa-flip" style="--fa-animation-duration: 3s;"></i></button>
+	<!-- search start -->
+	<form class="js-search search-form search-form--modal" method="get" action="anonynetting.github.io" role="search">
+		<div class="search-form__inner">
+					<div class="micro">
+				<p class="micro mb-">想要找点什么呢？</p>
+				<input class="text-input" type="search" name="s" placeholder="搜索" required>
+			</div>
+				</div>
+		<div class="search_close"></div>
+	</form>
+	<!-- search end -->
+<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/wordpress\/*"},{"not":{"href_matches":["\/wordpress\/wp-*.php","\/wordpress\/wp-admin\/*","\/wordpress\/wp-content\/uploads\/*","\/wordpress\/wp-content\/*","\/wordpress\/wp-content\/plugins\/*","\/wordpress\/wp-content\/themes\/Sakurairo\/*","\/wordpress\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}</script>
+<div class="gtranslate_wrapper" id="gt-wrapper-50601233"></div>
+<script type="text/javascript" src="https://s.nmxc.ltd/sakurairo/@2.6.3.1/js/smoothscroll.js?ver=2.6.3.1" id="SmoothScroll-js"></script>
+<script type="text/javascript" src="anonynetting.github.io/wp-content/themes/Sakurairo/js/polyfill.js?ver=2.6.3.1" id="polyfills-js"></script>
+<script type="text/javascript" id="app-js-before">
+/* <![CDATA[ */
+var _iro = {"pjax":true,"movies":"close","windowheight":"auto","ajaxurl":"anonynetting.github.io\/wp-admin\/admin-ajax.php","order":"asc","formpostion":"bottom","api":"anonynetting.github.io\/wp-json\/","nonce":"0f59f7daf6","google_analytics_id":"","gravatar_url":"weavatar.com\/avatar","NProgressON":true,"audio":false,"baguetteBox":false,"fancybox":false,"darkmode":false,"email_domain":"","email_name":"","ext_shared_lib":"","cookie_version_control":"","qzone_autocomplete":false,"site_name":"匿名制冲浪AnonymouslyNetting","author_name":"AnonymouslyNetting","template_url":"anonynetting.github.io\/wp-content\/themes\/Sakurairo","site_url":"anonynetting.github.io","qq_api_url":"anonynetting.github.io\/wp-json\/sakura\/v1\/qqinfo\/json","land_at_home":false,"live_search":false,"loading_ph":"https:\/\/s.nmxc.ltd\/sakurairo_vision\/@2.6\/load_svg\/inload.svg","clipboardCopyright":true,"entry_content_style":"sakurairo","random_graphs_mts":true,"code_highlight":"hljs","comment_upload_img":false,"cache_cover":true,"site_bg_as_cover":false,"yiyan_api":["https:\/\/v1.hitokoto.cn\/","https:\/\/api.nmxc.ltd\/yiyan\/"],"skin_bg0":"","skin_bg1":"https:\/\/s.nmxc.ltd\/sakurairo_vision\/@2.6\/background\/bg1.png","skin_bg2":"https:\/\/s.nmxc.ltd\/sakurairo_vision\/@2.6\/background\/bg2.png","skin_bg3":"https:\/\/s.nmxc.ltd\/sakurairo_vision\/@2.6\/background\/bg3.png","skin_bg4":"https:\/\/s.nmxc.ltd\/sakurairo_vision\/@2.6\/background\/bg4.png","cover_api":"https:\/\/tu.ltyuanfang.cn\/api\/fengjing.php"}
+/* ]]> */
+</script>
+<script type="text/javascript" src="anonynetting.github.io/wp-content/themes/Sakurairo/js/app.js?ver=2.6.3.1" id="app-js"></script>
+<script type="text/javascript" src="anonynetting.github.io/wp-content/themes/Sakurairo/js/page.js?ver=2.6.3.1" id="app-page-js"></script>
+<script type="text/javascript" id="gt_widget_script_50601233-js-before">
+/* <![CDATA[ */
+window.gtranslateSettings = /* document.write */ window.gtranslateSettings || {};window.gtranslateSettings['50601233'] = {"default_language":"zh-CN","languages":["zh-CN","zh-TW","en","ja","ko"],"url_structure":"none","native_language_names":1,"detect_browser_language":1,"wrapper_selector":"#gt-wrapper-50601233","select_language_label":"Select Language","horizontal_position":"right","vertical_position":"bottom","flags_location":"\/wordpress\/wp-content\/plugins\/gtranslate\/flags\/"};
+/* ]]> */
+</script><script src="anonynetting.github.io/wp-content/plugins/gtranslate/js/dropdown.js?ver=6.8.2" data-no-optimize="1" data-no-minify="1" data-gt-orig-url="/wordpress/microsoft-seal-tong-tai-jia-mi-ku-dai-ma-xiang-du/" data-gt-orig-domain="localhost" data-gt-widget-id="50601233" defer></script><div class="skin-menu no-select">
+          
+  <div class="theme-controls row-container">
+      <ul class="menu-list">
+      <li id="white-bg" title="浅色模式">
+        <i class="fa-solid fa-display fa-sm"></i>
+      </li>
+<!--Default-->
+      <li id="dark-bg" title="深色模式">
+        <i class="fa-regular fa-moon"></i>
+      </li>
+<!--Night-->
+    </ul>
+        
+	<div class="font-family-controls row-container">
+    <button type="button" class="control-btn-serif selected" title="切换到字体 A" data-name="serif">
+      <i class="fa-solid fa-font fa-lg"></i>
+    </button>
+    <button type="button" class="control-btn-sans-serif" title="切换到字体 B" data-name="sans-serif">
+      <i class="fa-solid fa-bold fa-lg"></i>
+    </button>
+  </div>
+    </div>
+</div>
+
+<!-- 首页波浪特效 -->
+<link rel="stylesheet" href="https://s.nmxc.ltd/sakurairo/@2.6.3.1/css/wave.css">
+
+</body>
+<!-- Particles动效 -->
+</html>
